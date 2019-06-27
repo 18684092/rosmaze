@@ -50,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
+  DIRECTORY msg
   FILES
   Num.msg
 #   Message1.msg
@@ -58,7 +59,9 @@ add_message_files(
 
 ## Generate services in the 'srv' folder
 add_service_files(
+  DIRECTORY srv
   FILES
+  AddTwoInts.srv
   MazeController.srv
 #   Service2.srv
 )
@@ -204,7 +207,8 @@ include_directories(
 find_library(SDL2_LIBRARY NAME SDL2 libsdl2)
 find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
 
-find_package( PkgConfig REQUIRED )
+find_package( catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg )
+find_package(PkgConfig REQUIRED)
 pkg_check_modules(ncurses REQUIRED ncurses)
 
 add_executable(talker src/talker.cpp)
@@ -225,4 +229,10 @@ target_link_libraries(maze_controller_client ${catkin_LIBRARIES})
 target_link_libraries(maze_controller_client ${ncurses_LIBRARIES})
 add_dependencies(maze_controller_client rosmaze_gencpp)
 
+add_executable(add_two_ints_server src/add_two_ints_server.cpp)
+target_link_libraries(add_two_ints_server ${catkin_LIBRARIES})
+add_dependencies(add_two_ints_server rosmaze_gencpp)
 
+add_executable(add_two_ints_client src/add_two_ints_client.cpp)
+target_link_libraries(add_two_ints_client ${catkin_LIBRARIES})
+add_dependencies(add_two_ints_client rosmaze_gencpp)

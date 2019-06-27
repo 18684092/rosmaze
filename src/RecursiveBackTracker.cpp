@@ -6,6 +6,8 @@ Course: BSc Computer Science Level 1
 */
 
 
+
+
 // My classes
 #include "RecursiveBackTracker.h"
 #include "Place.h"
@@ -22,6 +24,7 @@ using namespace std;
 // Instantiate with size of World
 RecursiveBackTracker::RecursiveBackTracker(int y, int x)
 {
+    
     // Set the size of this world
     this->_MaxY = y;
     this->_MaxX = x;
@@ -41,6 +44,7 @@ RecursiveBackTracker::RecursiveBackTracker(int y, int x)
 
     // Off we go...
     this->_CreateMaze(stack, visited);
+    
 }
 
 // Creating a maze using the recursive backtracker algorithm
@@ -276,6 +280,13 @@ void RecursiveBackTracker::DisplayMaze()
                 DrawArrows(renderer, markerY, markerX);
 
                 SDL_RenderPresent(renderer);
+                
+                // This is just testing, where to put this
+
+                
+
+                
+                
 
                 // Wait for close window event
                 while (SDL_PollEvent(&event))
@@ -514,6 +525,18 @@ void RecursiveBackTracker::DrawLineW(SDL_Renderer *renderer, int y, int x)
 void RecursiveBackTracker::DrawLineNW(SDL_Renderer *renderer, int y, int x)
 {
     SDL_RenderDrawLine(renderer, x, y + 10, x + 10, y);
+}
+
+// ROS Services
+
+bool RecursiveBackTracker::ROSValidDir(rosmaze::MazeController::Request &req, rosmaze::MazeController::Response &res)
+{
+    // request is a string (direction)
+    // responce is a string (result)
+    res.result = "I heard you";
+    ROS_INFO("request: %s", (std::string)req.direction);
+    ROS_INFO("sending back response: %s", (std::string)res.result);
+    return true;
 }
 
 

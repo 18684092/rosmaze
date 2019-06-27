@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "ros_maze/MazeController.h"
+#include "rosmaze/MazeController.h"
 #include "std_msgs/String.h"
 #include <ncurses.h>
 #include <string>
@@ -60,8 +60,8 @@ printw("Waiting for key press (num lock should be on)\r" );
         }
     std::cout << "The direction selected is " << s << " :: \"" << d << "\" will be sent to the service\r" << std::endl;
     ros::NodeHandle n;
-    ros::ServiceClient client = n.serviceClient<ros_maze::MazeController>("maze_controller");
-    ros_maze::MazeController srv;
+    ros::ServiceClient client = n.serviceClient<rosmaze::MazeController>("controller");
+    rosmaze::MazeController srv;
     srv.request.direction = s;
     if (client.call(srv))
     {

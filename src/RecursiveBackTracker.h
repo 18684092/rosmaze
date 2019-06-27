@@ -8,6 +8,10 @@ Course: BSc Computer Science Level 1
 #ifndef RECURSIVEBACKTRACKER_H
 #define RECURSIVEBACKTRACKER_H
 
+// ROS 
+#include "ros/ros.h"
+#include "rosmaze/MazeController.h"
+
 // Standard objects
 #include <string>
 #include <map>
@@ -34,6 +38,9 @@ class RecursiveBackTracker
         uint8_t GetUnvisitedNeighbours(Place);
         string GetRandomNeighbour(uint8_t neighbours);
         void DisplayMaze();
+	static bool ROSValidDir(rosmaze::MazeController::Request &, rosmaze::MazeController::Response &);
+        Place _GetNewPlace(Place, string);
+
 
     protected:
 
@@ -57,8 +64,7 @@ class RecursiveBackTracker
         void DrawMarker(SDL_Renderer *, int, int);
         void DrawArrows(SDL_Renderer *, int, int);
         void DrawSmallDot(SDL_Renderer *, int, int);
-        Place _GetNewPlace(Place, string);
-
+	
         // Direction bitmap
         map<string, uint8_t> _Dir = {{"n",128}, {"ne",64}, {"e",32}, {"se",16}, {"s",8}, {"sw",4}, {"w",2}, {"nw",1}};
         // Mirror the directions (opposites) ie, n == s, se == nw etc
