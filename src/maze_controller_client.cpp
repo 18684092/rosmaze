@@ -9,19 +9,19 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-ros::init(argc, argv, "maze_controller_client");
- initscr();
-cbreak();
- noecho();
- int c = 0;
-string s;
-int d;
-printw("Waiting for key press (num lock should be on)\r" );
- while( true)
- {
-    c = getch();
-    switch(c)
-        {
+    ros::init(argc, argv, "maze_controller_client");
+    initscr();
+    cbreak();
+    noecho();
+    int c = 0;
+    string s;
+    int d;
+    printw("Waiting for key press (num lock should be on)\r" );
+    while( true)
+    {
+        c = getch();
+        switch(c)
+            {
             case 56:
                 s = "North";
                 d = 8;
@@ -59,31 +59,34 @@ printw("Waiting for key press (num lock should be on)\r" );
                 d = 0;
         }
     
-    if (d > 0)
-    {
-        std::cout << "The direction selected is " << s << " :: \"" << d << "\" will be sent to the service\r" << std::endl;
-        ros::NodeHandle n;
-        ros::ServiceClient client = n.serviceClient<rosmaze::MazeController>("controller");
-        rosmaze::MazeController srv;
-        srv.request.direction = d;
-        if (client.call(srv))
+        if (d > 0)
         {
-            ROS_INFO("Result: %d\r", srv.response.result);
+            std::cout << "The direction selected is " << s << " :: \"" << d << "\" will be sent to the service\r" << std::endl;
+            ros::NodeHandle n;
+            ros::ServiceClient client = n.serviceClient<rosmaze::MazeController>("controller");
+            rosmaze::MazeController srv;
+            srv.request.direction = d;
+            
+            if (client.call(srv))
+            {
+                ROS_INFO("Result: %d\r", srv.response.result);
+            }
+            else
+            {
+                ROS_ERROR("Failed to call service ");
+                return 1;
+            }
+            
+        std::cout << "The result returned from server was " << srv.response.result << "\r" << std::endl;
         }
         else
         {
-            ROS_ERROR("Failed to call service ");
+            std::cout << "The direction selected is " << s << " nothing will be sent to the service\r" << std::endl;
         }
-    }
-    else
-    {
-      std::cout << "The direction selected is " << s << " nothing will be sent to the service\r" << std::endl;  
-    }
-    s = "";
-    d = 0;
+        s = "";
+        d = 0;
 
- }
- endwin();
-
- return 0;
+    }
+endwin();
+return 0;
 }

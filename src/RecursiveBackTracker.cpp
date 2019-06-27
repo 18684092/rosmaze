@@ -254,12 +254,15 @@ void RecursiveBackTracker::DisplayMaze()
             int markerX = 0;
             int markerY = 0;
             
-                            // This is just testing, where to put this
-                ROSCallback a;
-                server = node.advertiseService("controller", &ROSCallback::ROSValidDir, &a);
-                ROS_INFO("Ready to serve.....");
-                //ros::spin();
-
+            // This is a wrapper class so we can access the received parameters
+            // ROSCallback.serviceDir is the direction variable received
+            ROSCallback a;
+            // Run the ROSS service with callback
+            server = node.advertiseService("controller", &ROSCallback::ROSValidDir, &a);
+            ROS_INFO("Ready to serve.....");
+            
+            // Draw screen at about 60 fps, checking for key presses from
+            // either local or remote
             while (!done)
             {
                 SDL_Event event;
@@ -282,15 +285,20 @@ void RecursiveBackTracker::DisplayMaze()
                     }
                 }
 
-
                 DrawMarker(renderer, markerY, markerX);
                 DrawArrows(renderer, markerY, markerX);
 
                 SDL_RenderPresent(renderer);
                 
+                // listen to server
                 ros::spinOnce();
                 
+                // Access parameter and decide what direction
                 
+                // Replace this code with a combined function, ie we have duplicated code
+                // so combine and neaten up TODO
+                
+                // switch direction that was received from ROS
                 switch (a.serviceDir)
                                 {
                                     case 4:
@@ -366,87 +374,89 @@ void RecursiveBackTracker::DisplayMaze()
                 a.serviceDir = 0;
                 
 
-                // Wait for close window event
+                // Wait for event
                 while (SDL_PollEvent(&event))
                 {
                     switch (event.type)
                     {
+                        // Window close
                         case SDL_QUIT:
                             done = SDL_TRUE;
                             break;
-                            case SDL_KEYDOWN:
-                                switch (event.key.keysym.sym)
+                        // local key pressed
+                        case SDL_KEYDOWN:
+                            switch (event.key.keysym.sym)
+                            {
+                                case SDLK_KP_4:
                                 {
-                                    case SDLK_KP_4:
+                                    if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
                                     {
-                                        if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
-                                        {
-                                            markerX--;
-                                        }
-                                        break;
-                                    }
-                                    case SDLK_KP_6:
-                                    {
-                                        if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
-                                        {
-                                            markerX++;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_8:
-                                    {
-                                        if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
-                                        {
-                                            markerY--;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_2:
-                                    {
-                                        if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
-                                        {
-                                            markerY++;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_3:
-                                    {
-                                        if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
-                                        {
-                                            markerY++;
-                                            markerX++;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_7:
-                                    {
-                                        if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
-                                        {
-                                            markerY--;
-                                            markerX--;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_1:
-                                    {
-                                        if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
-                                        {
-                                            markerY++;
-                                            markerX--;
-                                        }
-                                    }
-                                    break;
-                                    case SDLK_KP_9:
-                                    {
-                                        if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
-                                        {
-                                            markerY--;
-                                            markerX++;
-                                        }
+                                        markerX--;
                                     }
                                     break;
                                 }
+                                case SDLK_KP_6:
+                                {
+                                    if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
+                                    {
+                                        markerX++;
+                                    }
+                                }
                                 break;
+                                case SDLK_KP_8:
+                                {
+                                    if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
+                                    {
+                                        markerY--;
+                                    }
+                                }
+                                break;
+                                case SDLK_KP_2:
+                                {
+                                    if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
+                                    {
+                                        markerY++;
+                                    }
+                                }
+                                break;
+                                case SDLK_KP_3:
+                                {
+                                    if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
+                                    {
+                                        markerY++;
+                                        markerX++;
+                                    }
+                                }
+                                break;
+                                case SDLK_KP_7:
+                                {
+                                    if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
+                                    {
+                                        markerY--;
+                                        markerX--;
+                                    }
+                                }
+                                break;
+                                case SDLK_KP_1:
+                                {
+                                    if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
+                                    {
+                                        markerY++;
+                                        markerX--;
+                                    }
+                                }
+                                break;
+                                case SDLK_KP_9:
+                                {
+                                    if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
+                                    {
+                                        markerY--;
+                                        markerX++;
+                                    }
+                                }
+                                break;
+                            }
+                            break;
                      }
                 }
 
