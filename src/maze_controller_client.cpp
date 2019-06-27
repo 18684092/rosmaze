@@ -15,7 +15,7 @@ cbreak();
  noecho();
  int c = 0;
 string s;
-string d;
+int d;
 printw("Waiting for key press (num lock should be on)\r" );
  while( true)
  {
@@ -24,56 +24,63 @@ printw("Waiting for key press (num lock should be on)\r" );
         {
             case 56:
                 s = "North";
-                d = "n";
+                d = 8;
                 break;
             case 57:
                 s = "North East";
-                d = "ne";
+                d = 9;
                 break;
             case 54:
                 s = "East";
-                d = "e";
+                d = 6;
                 break;
             case 51:
                 s = "South East";
-                d = "se";
+                d = 3;
                 break;
             case 50:
                 s = "South";
-                d = "s";
+                d = 2;
                 break;
             case 49:
                 s = "South West";
-                d = "sw";
+                d = 1;
                 break;
             case 52:
                 s = "West";
-                d = "w";
+                d = 4;
                 break;
             case 55:
                 s = "North West";
-                d = "nw";
+                d = 7;
                 break;
             default:
                 s = "*not valid*";
-                d = "nothing";
+                d = 0;
         }
-    std::cout << "The direction selected is " << s << " :: \"" << d << "\" will be sent to the service\r" << std::endl;
-    ros::NodeHandle n;
-    ros::ServiceClient client = n.serviceClient<rosmaze::MazeController>("controller");
-    rosmaze::MazeController srv;
-    srv.request.direction = s;
-    if (client.call(srv))
+    
+    if (d > 0)
     {
-        ROS_INFO("Result: %s", srv.response.result);
+        std::cout << "The direction selected is " << s << " :: \"" << d << "\" will be sent to the service\r" << std::endl;
+        ros::NodeHandle n;
+        ros::ServiceClient client = n.serviceClient<rosmaze::MazeController>("controller");
+        rosmaze::MazeController srv;
+        srv.request.direction = d;
+        if (client.call(srv))
+        {
+            ROS_INFO("Result: %d\r", srv.response.result);
+        }
+        else
+        {
+            ROS_ERROR("Failed to call service ");
+        }
     }
     else
     {
-        ROS_ERROR("Failed to call service ");
+      std::cout << "The direction selected is " << s << " nothing will be sent to the service\r" << std::endl;  
     }
-
     s = "";
-    d = "";
+    d = 0;
 
  }
  endwin();

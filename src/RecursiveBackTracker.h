@@ -30,6 +30,10 @@ using namespace std;
 class RecursiveBackTracker
 {
     public:
+	ros::NodeHandle node;
+	ros::ServiceServer server;
+	
+
         RecursiveBackTracker(int, int);
         uint8_t GetDoors(Place);
         void SetDoors(Place, uint8_t);
@@ -38,7 +42,7 @@ class RecursiveBackTracker
         uint8_t GetUnvisitedNeighbours(Place);
         string GetRandomNeighbour(uint8_t neighbours);
         void DisplayMaze();
-	static bool ROSValidDir(rosmaze::MazeController::Request &, rosmaze::MazeController::Response &);
+	//static bool ROSValidDir(rosmaze::MazeController::Request &, rosmaze::MazeController::Response &);
         Place _GetNewPlace(Place, string);
 
 

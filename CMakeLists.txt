@@ -219,7 +219,7 @@ add_executable(listener src/listener.cpp)
 target_link_libraries(listener ${catkin_LIBRARIES})
 add_dependencies(listener rosmaze_generate_messages_cpp)
 
-add_executable(maze_controller_server src/maze_controller_server.cpp src/RecursiveBackTracker.cpp src/Place.cpp src/Location.cpp src/Stack.cpp)
+add_executable(maze_controller_server src/maze_controller_server.cpp src/RecursiveBackTracker.cpp src/Place.cpp src/Location.cpp src/Stack.cpp src/ROSCallback.cpp)
 target_link_libraries(maze_controller_server ${catkin_LIBRARIES})
 target_link_libraries(maze_controller_server SDL2)
 add_dependencies(maze_controller_server rosmaze_gencpp)

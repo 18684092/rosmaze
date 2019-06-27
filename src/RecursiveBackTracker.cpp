@@ -12,6 +12,7 @@ Course: BSc Computer Science Level 1
 #include "RecursiveBackTracker.h"
 #include "Place.h"
 #include "Stack.h"
+#include "ROSCallback.h"
 #include "SDL2/SDL.h"
 
 // Standard libraries
@@ -24,10 +25,10 @@ using namespace std;
 // Instantiate with size of World
 RecursiveBackTracker::RecursiveBackTracker(int y, int x)
 {
-    
     // Set the size of this world
     this->_MaxY = y;
     this->_MaxX = x;
+    int serviceDir = 0;
 
     // Shouldn't be necessary but included for completeness
     // in case I want to import a world
@@ -252,6 +253,12 @@ void RecursiveBackTracker::DisplayMaze()
 
             int markerX = 0;
             int markerY = 0;
+            
+                            // This is just testing, where to put this
+                ROSCallback a;
+                server = node.advertiseService("controller", &ROSCallback::ROSValidDir, &a);
+                ROS_INFO("Ready to serve.....");
+                //ros::spin();
 
             while (!done)
             {
@@ -281,11 +288,82 @@ void RecursiveBackTracker::DisplayMaze()
 
                 SDL_RenderPresent(renderer);
                 
-                // This is just testing, where to put this
-
+                ros::spinOnce();
                 
-
                 
+                switch (a.serviceDir)
+                                {
+                                    case 4:
+                                    {
+                                        if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
+                                        {
+                                            markerX--;
+                                        }
+                                        break;
+                                    }
+                                    case 6:
+                                    {
+                                        if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
+                                        {
+                                            markerX++;
+                                        }
+                                    }
+                                    break;
+                                    case 8:
+                                    {
+                                        if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
+                                        {
+                                            markerY--;
+                                        }
+                                    }
+                                    break;
+                                    case 2:
+                                    {
+                                        if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
+                                        {
+                                            markerY++;
+                                        }
+                                    }
+                                    break;
+                                    case 3:
+                                    {
+                                        if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
+                                        {
+                                            markerY++;
+                                            markerX++;
+                                        }
+                                    }
+                                    break;
+                                    case 7:
+                                    {
+                                        if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
+                                        {
+                                            markerY--;
+                                            markerX--;
+                                        }
+                                    }
+                                    break;
+                                    case 1:
+                                    {
+                                        if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
+                                        {
+                                            markerY++;
+                                            markerX--;
+                                        }
+                                    }
+                                    break;
+                                    case 9:
+                                    {
+                                        if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
+                                        {
+                                            markerY--;
+                                            markerX++;
+                                        }
+                                    }
+                                    break;
+                                }
+                                
+                a.serviceDir = 0;
                 
 
                 // Wait for close window event
@@ -527,16 +605,5 @@ void RecursiveBackTracker::DrawLineNW(SDL_Renderer *renderer, int y, int x)
     SDL_RenderDrawLine(renderer, x, y + 10, x + 10, y);
 }
 
-// ROS Services
-
-bool RecursiveBackTracker::ROSValidDir(rosmaze::MazeController::Request &req, rosmaze::MazeController::Response &res)
-{
-    // request is a string (direction)
-    // responce is a string (result)
-    res.result = "I heard you";
-    ROS_INFO("request: %s", (std::string)req.direction);
-    ROS_INFO("sending back response: %s", (std::string)res.result);
-    return true;
-}
 
 
