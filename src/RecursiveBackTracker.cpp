@@ -253,6 +253,8 @@ void RecursiveBackTracker::DisplayMaze()
 
             int markerX = 0;
             int markerY = 0;
+            int remoteKey = 0;
+            int localKey = 0;
             
             // This is a wrapper class so we can access the received parameters
             // ROSCallback.serviceDir is the direction variable received
@@ -295,82 +297,13 @@ void RecursiveBackTracker::DisplayMaze()
                 
                 // Access parameter and decide what direction
                 
-                // Replace this code with a combined function, ie we have duplicated code
-                // so combine and neaten up TODO
+                // set remote key map
+                remoteKey = _keyMap[a.serviceDir];
                 
                 // switch direction that was received from ROS
-                switch (a.serviceDir)
-                                {
-                                    case 4:
-                                    {
-                                        if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
-                                        {
-                                            markerX--;
-                                        }
-                                        break;
-                                    }
-                                    case 6:
-                                    {
-                                        if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
-                                        {
-                                            markerX++;
-                                        }
-                                    }
-                                    break;
-                                    case 8:
-                                    {
-                                        if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
-                                        {
-                                            markerY--;
-                                        }
-                                    }
-                                    break;
-                                    case 2:
-                                    {
-                                        if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
-                                        {
-                                            markerY++;
-                                        }
-                                    }
-                                    break;
-                                    case 3:
-                                    {
-                                        if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
-                                        {
-                                            markerY++;
-                                            markerX++;
-                                        }
-                                    }
-                                    break;
-                                    case 7:
-                                    {
-                                        if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
-                                        {
-                                            markerY--;
-                                            markerX--;
-                                        }
-                                    }
-                                    break;
-                                    case 1:
-                                    {
-                                        if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
-                                        {
-                                            markerY++;
-                                            markerX--;
-                                        }
-                                    }
-                                    break;
-                                    case 9:
-                                    {
-                                        if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
-                                        {
-                                            markerY--;
-                                            markerX++;
-                                        }
-                                    }
-                                    break;
-                                }
-                                
+                ProcessKeyBD(markerX, markerY, remoteKey, localKey);
+                
+                remoteKey = 0;
                 a.serviceDir = 0;
                 
 
@@ -385,77 +318,10 @@ void RecursiveBackTracker::DisplayMaze()
                             break;
                         // local key pressed
                         case SDL_KEYDOWN:
-                            switch (event.key.keysym.sym)
-                            {
-                                case SDLK_KP_4:
-                                {
-                                    if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
-                                    {
-                                        markerX--;
-                                    }
-                                    break;
-                                }
-                                case SDLK_KP_6:
-                                {
-                                    if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
-                                    {
-                                        markerX++;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_8:
-                                {
-                                    if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
-                                    {
-                                        markerY--;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_2:
-                                {
-                                    if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
-                                    {
-                                        markerY++;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_3:
-                                {
-                                    if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
-                                    {
-                                        markerY++;
-                                        markerX++;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_7:
-                                {
-                                    if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
-                                    {
-                                        markerY--;
-                                        markerX--;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_1:
-                                {
-                                    if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
-                                    {
-                                        markerY++;
-                                        markerX--;
-                                    }
-                                }
-                                break;
-                                case SDLK_KP_9:
-                                {
-                                    if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
-                                    {
-                                        markerY--;
-                                        markerX++;
-                                    }
-                                }
-                                break;
-                            }
+                            localKey = event.key.keysym.sym;
+                            ProcessKeyBD(markerX, markerY, remoteKey, localKey);
+                            localKey = 0;
+                            
                             break;
                      }
                 }
@@ -474,6 +340,84 @@ void RecursiveBackTracker::DisplayMaze()
 
     //Quit SDL subsystems
     SDL_Quit();
+}
+
+void RecursiveBackTracker::ProcessKeyBD(int &markerX, int &markerY, int remoteKey, int localKey)
+{
+    int key = localKey;
+    if (remoteKey > 0) key = remoteKey;
+    switch (key)
+    {
+        case SDLK_KP_4:
+        {
+            if (markerX > 0 && IsDoor(Place(markerY, markerX), "w"))
+            {
+                markerX--;
+            }
+            break;
+        }
+        case SDLK_KP_6:
+        {
+            if (markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "e"))
+            {
+                markerX++;
+            }
+        }
+        break;
+        case SDLK_KP_8:
+        {
+            if (markerY > 0 && IsDoor(Place(markerY, markerX), "n"))
+            {
+                markerY--;
+            }
+        }
+        break;
+        case SDLK_KP_2:
+        {
+            if (markerY < _MaxY - 1 && IsDoor(Place(markerY, markerX), "s"))
+            {
+                markerY++;
+            }
+        }
+        break;
+        case SDLK_KP_3:
+        {
+            if ( markerY < _MaxY - 1 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "se"))
+            {
+                markerY++;
+                markerX++;
+            }
+        }
+        break;
+        case SDLK_KP_7:
+        {
+            if (markerY > 0 && markerX > 0 && IsDoor(Place(markerY, markerX), "nw"))
+            {
+                markerY--;
+                markerX--;
+            }
+        }
+        break;
+        case SDLK_KP_1:
+        {
+            if (markerY < _MaxY - 1 && markerX > 0 && IsDoor(Place(markerY, markerX), "sw"))
+            {
+                markerY++;
+                markerX--;
+            }
+        }
+        break;
+        case SDLK_KP_9:
+        {
+            if (markerY > 0 && markerX < _MaxX - 1 && IsDoor(Place(markerY, markerX), "ne"))
+            {
+                markerY--;
+                markerX++;
+            }
+        }
+        break;
+    }
+    
 }
 
 void RecursiveBackTracker::DrawMarker(SDL_Renderer *renderer, int i, int j)

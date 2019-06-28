@@ -68,6 +68,7 @@ class RecursiveBackTracker
         void DrawMarker(SDL_Renderer *, int, int);
         void DrawArrows(SDL_Renderer *, int, int);
         void DrawSmallDot(SDL_Renderer *, int, int);
+	void ProcessKeyBD(int &, int &, int, int);
 	
         // Direction bitmap
         map<string, uint8_t> _Dir = {{"n",128}, {"ne",64}, {"e",32}, {"se",16}, {"s",8}, {"sw",4}, {"w",2}, {"nw",1}};
@@ -76,6 +77,9 @@ class RecursiveBackTracker
 
         // Compass strings
         string _Compass[8] = {"nw", "w", "sw", "s", "se", "e", "ne", "n"};
+
+	// Key map         0  sw  s   se  w   0  e   nw  n   ne
+	int _keyMap[10] = {0, SDLK_KP_1, SDLK_KP_2, SDLK_KP_3, SDLK_KP_4, 0, SDLK_KP_6, SDLK_KP_7, SDLK_KP_8, SDLK_KP_9};
 
         //Screen dimension constants
         const int SCREEN_WIDTH = 620;
