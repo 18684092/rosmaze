@@ -5,14 +5,13 @@ Course: BSc Computer Science Level 1
 
 */
 
-
-
-
 // My classes
 #include "RecursiveBackTracker.h"
 #include "Place.h"
 #include "Stack.h"
 #include "ROSCallback.h"
+
+// Graphics and keybrd library
 #include "SDL2/SDL.h"
 
 // Standard libraries
@@ -251,8 +250,11 @@ void RecursiveBackTracker::DisplayMaze()
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
             SDL_bool done = SDL_FALSE;
 
+            // Position of green dot
             int markerX = 0;
             int markerY = 0;
+
+            // Controlling which key pressed and from where
             int remoteKey = 0;
             int localKey = 0;
             
@@ -287,12 +289,14 @@ void RecursiveBackTracker::DisplayMaze()
                     }
                 }
 
+                // Draw green dot and red arrows
                 DrawMarker(renderer, markerY, markerX);
                 DrawArrows(renderer, markerY, markerX);
 
+                // Update screen
                 SDL_RenderPresent(renderer);
                 
-                // listen to server
+                // listen for remote key presses
                 ros::spinOnce();
                 
                 // Access parameter and decide what direction
@@ -303,6 +307,7 @@ void RecursiveBackTracker::DisplayMaze()
                 // switch direction that was received from ROS
                 ProcessKeyBD(markerX, markerY, remoteKey, localKey);
                 
+                // Clear remote keys
                 remoteKey = 0;
                 a.serviceDir = 0;
                 
@@ -342,10 +347,12 @@ void RecursiveBackTracker::DisplayMaze()
     SDL_Quit();
 }
 
+// Process the remote and local key presses and move green dot marker
 void RecursiveBackTracker::ProcessKeyBD(int &markerX, int &markerY, int remoteKey, int localKey)
 {
     int key = localKey;
     if (remoteKey > 0) key = remoteKey;
+    // 0 - 9 keys but converted to SDL key codes
     switch (key)
     {
         case SDLK_KP_4:
@@ -420,6 +427,7 @@ void RecursiveBackTracker::ProcessKeyBD(int &markerX, int &markerY, int remoteKe
     
 }
 
+// Draw green dot
 void RecursiveBackTracker::DrawMarker(SDL_Renderer *renderer, int i, int j)
 {
     int y = (i * 35) + 20;
@@ -430,6 +438,7 @@ void RecursiveBackTracker::DrawMarker(SDL_Renderer *renderer, int i, int j)
     SDL_RenderFillRect( renderer, &fillRect );
 }
 
+// Draw Red arrows
 void RecursiveBackTracker::DrawArrows(SDL_Renderer *renderer, int i, int j)
 {
     int y = (i * 35) + 27;
@@ -497,12 +506,14 @@ void RecursiveBackTracker::DrawArrows(SDL_Renderer *renderer, int i, int j)
     }
 }
 
+// Small red dots on end of arrows
 void RecursiveBackTracker::DrawSmallDot(SDL_Renderer *renderer, int x1, int y1)
 {
     SDL_Rect fillRect = { x1 - 3 , y1 - 3 , 7, 7 };
     SDL_RenderFillRect( renderer, &fillRect );
 }
 
+// Main maze walls and doors
 void RecursiveBackTracker::DrawOctagon(SDL_Renderer *renderer, int y, int x, int i, int j)
 {
     uint8_t doors = _World[i][j].Doors;
@@ -558,6 +569,3 @@ void RecursiveBackTracker::DrawLineNW(SDL_Renderer *renderer, int y, int x)
 {
     SDL_RenderDrawLine(renderer, x, y + 10, x + 10, y);
 }
-
-
-

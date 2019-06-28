@@ -122,6 +122,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
+  # header files go here
   src/include
   include
   ${catkin_INCLUDE_DIRS}
@@ -205,10 +206,13 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
+# I struggled to link SDL2 library
 find_library(SDL2_LIBRARY NAME SDL2 libsdl2)
 find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
 
 find_package( catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg )
+
+# ncurses is a library
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ncurses REQUIRED ncurses)
 
@@ -220,8 +224,10 @@ add_executable(listener src/listener.cpp)
 target_link_libraries(listener ${catkin_LIBRARIES})
 add_dependencies(listener rosmaze_generate_messages_cpp)
 
+# all the headers / include files that make up the executable
 add_executable(maze_controller_server src/maze_controller_server.cpp src/RecursiveBackTracker.cpp src/Place.cpp src/Location.cpp src/Stack.cpp src/ROSCallback.cpp)
 target_link_libraries(maze_controller_server ${catkin_LIBRARIES})
+# ${SDL2_LIBRARIES} didnt work but plain SDL2 did
 target_link_libraries(maze_controller_server SDL2)
 add_dependencies(maze_controller_server rosmaze_gencpp)
 
