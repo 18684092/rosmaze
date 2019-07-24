@@ -63,6 +63,7 @@ add_service_files(
   FILES
   AddTwoInts.srv
   MazeController.srv
+  JoyMsg.srv
 #   Service2.srv
 )
 
@@ -230,6 +231,14 @@ target_link_libraries(maze_controller_server ${catkin_LIBRARIES})
 # ${SDL2_LIBRARIES} didnt work but plain SDL2 did
 target_link_libraries(maze_controller_server SDL2)
 add_dependencies(maze_controller_server rosmaze_gencpp)
+
+add_executable(joy_client src/joy_client.cpp src/GamePad.cpp)
+target_link_libraries(joy_client ${catkin_LIBRARIES})
+add_dependencies(joy_client rosmaze_gencpp)
+
+add_executable(joy_server src/joy_server.cpp src/ROSCallback.cpp)
+target_link_libraries(joy_server ${catkin_LIBRARIES})
+add_dependencies(joy_server rosmaze_gencpp)
 
 add_executable(maze_controller_client src/maze_controller_client.cpp)
 target_link_libraries(maze_controller_client ${catkin_LIBRARIES})

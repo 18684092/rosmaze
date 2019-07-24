@@ -76,6 +76,7 @@
   <exec_depend>ncurses</exec_depend>
   <exec_depend>SDL2</exec_depend>
   <exec_depend>RecursiveBackTracker</exec_depend>
+  <exec_depend>GamePad</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
