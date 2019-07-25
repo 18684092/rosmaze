@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rosmaze)
 
+
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -pthread)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -63,7 +64,6 @@ add_service_files(
   FILES
   AddTwoInts.srv
   MazeController.srv
-  JoyMsg.srv
 #   Service2.srv
 )
 
@@ -209,7 +209,6 @@ include_directories(
 
 # I struggled to link SDL2 library
 find_library(SDL2_LIBRARY NAME SDL2 libsdl2)
-find_library(WIRINGPI_LIBRARY wiringPi /usr/include/wiringPi)
 find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
 
 find_package( catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg )
@@ -232,15 +231,6 @@ target_link_libraries(maze_controller_server ${catkin_LIBRARIES})
 # ${SDL2_LIBRARIES} didnt work but plain SDL2 did
 target_link_libraries(maze_controller_server SDL2)
 add_dependencies(maze_controller_server rosmaze_gencpp)
-
-add_executable(joy_client src/joy_client.cpp src/GamePad.cpp)
-target_link_libraries(joy_client ${catkin_LIBRARIES})
-add_dependencies(joy_client rosmaze_gencpp)
-
-add_executable(joy_server src/joy_server.cpp src/ROSCallback.cpp)
-target_link_libraries(joy_server ${catkin_LIBRARIES})
-target_link_libraries(joy_server ${WIRINGPI_LIBRARY})
-add_dependencies(joy_server rosmaze_gencpp)
 
 add_executable(maze_controller_client src/maze_controller_client.cpp)
 target_link_libraries(maze_controller_client ${catkin_LIBRARIES})

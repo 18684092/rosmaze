@@ -14,16 +14,27 @@ Course: BSc Computer Science Level 1
 // My classes
 #include "ROSCallback.h"
 
+void east();
+void west();
+void north();
+void south();
+void stop();
+void northEast();
+void southEast();
+void northWest();
+void southWest();
+
+//make global variables to store the wiring pi pin numbers for the motors
+int m1a = 0;
+int m1b = 1;
+int m2a = 3;
+int m2b = 4;
+
+
 int main(int argc, char **argv)
 {
 	// Joystick sensitivity
 	int SENSITIVITY = 5000;
-
-	//make global variables to store the wiring pi pin numbers for the motors
-	int m1a = 0;
-	int m1b = 1;
-	int m2a = 3;
-	int m2b = 4;
 
 	// Init motor controller
 	wiringPiSetup();
@@ -43,7 +54,7 @@ int main(int argc, char **argv)
 
 	// Run the ROSS service with callback
 	server = node.advertiseService("andy_joystick", &ROSCallback::ROSJoyVector, &RC);
-	
+
 	ROS_INFO("Ready to serve.....");
 
 	while (true)
@@ -52,15 +63,15 @@ int main(int argc, char **argv)
                 ros::spinOnce();
 		if (RC.vectorJoy.x != 0.0f || RC.vectorJoy.y != 0.0f)
 		{
-			if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y < SENSITIVITY && RC.vectorJoy.y > -SENSITIVITY)) { east(); }
-    			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y < SENSITIVITY && RC.vectorJoy.y > -SENSITIVITY)) { west(); }
-    			else if ((RC.vectorJoy.x < SENSITIVITY) && (RC.vectorJoy.x > -SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) { south() ;}
-    			else if ((RC.vectorJoy.x < SENSITIVITY) && (RC.vectorJoy.x > -SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) { north(); }
-    			else if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) { northEast(); }
-    			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) { northWest(); }
-			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) { southWest(); }
-    			else if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) { southEast(); }
-			stop();	
+			if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y < SENSITIVITY && RC.vectorJoy.y > -SENSITIVITY)) east();
+    			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y < SENSITIVITY && RC.vectorJoy.y > -SENSITIVITY)) west();
+    			else if ((RC.vectorJoy.x < SENSITIVITY) && (RC.vectorJoy.x > -SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) south();
+    			else if ((RC.vectorJoy.x < SENSITIVITY) && (RC.vectorJoy.x > -SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) north();
+    			else if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) northEast();
+    			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y < -SENSITIVITY)) northWest();
+			else if ((RC.vectorJoy.x < -SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) southWest();
+    			else if ((RC.vectorJoy.x > SENSITIVITY) && (RC.vectorJoy.y > SENSITIVITY)) southEast();
+			stop();
 		}
 
 		// reset direction
